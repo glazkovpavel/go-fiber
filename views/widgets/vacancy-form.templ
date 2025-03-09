@@ -1,0 +1,75 @@
+package widgets
+
+import "go/go-fiber/views/components"
+
+templ VacancyForm() {
+        <div class="vacancy-form">
+            @VacancyFormStyle()
+            @components.Title2("Опубликовать вакансию")
+            <p class="vacancy-form__text">Введите все необходимые данные для публикации</p>
+            <form>
+                <div class="vacancy-form__inputs">
+                   @components.Input(components.InputProps{
+                        Placeholder: "Должность",
+                        Name: "role",
+                    })
+                    @components.Input(components.InputProps{
+                        Placeholder: "Название компании",
+                        Name: "company",
+                    })
+                    @components.Input(components.InputProps{
+                        Placeholder: "Сфера Компании",
+                        Name: "type",
+                    })
+                    @components.Input(components.InputProps{
+                        Placeholder: "Заработная плата",
+                        Name: "salary",
+                    })
+                    @components.Input(components.InputProps{
+                        Placeholder: "Расположение",
+                        Name: "location",
+                    })
+                    @components.Input(components.InputProps{
+                        Placeholder: "Контактный email",
+                        Name: "email",
+                    })
+                </div>
+
+                @components.SubmitButton() {
+                    <span>Опубликовать вакансию</span>
+                }
+            </form>
+        </div>
+}
+
+templ VacancyFormStyle() {
+	<style>
+        .vacancy-form {
+            max-width: 890px;
+            width: 100%;
+        }
+        .vacancy-form form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .vacancy-form__inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            gap: 30px 24px;
+            margin-bottom: 30px;
+        }
+
+       .vacancy-form__text {
+            overflow: hidden;
+            color: var(--color-black);
+            text-align: center;
+            font-size: 16px;
+            font-weight: 400;
+            white-space: nowrap;
+            margin-bottom: 60px;
+       }
+	</style>
+}
