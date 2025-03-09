@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/fatih/color"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -8,12 +9,12 @@ import (
 )
 
 func Init() {
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		return
 	}
-	log.Println("Loading .env file")
+	color.Green("Loading .env file")
 }
 
 func getString(key, defaultValue string) string {
