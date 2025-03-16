@@ -21,6 +21,30 @@ func NewVacancyRepository(dbpool *pgxpool.Pool, customLogger *zerolog.Logger) *V
 	}
 }
 
+func (r *VacancyRepository) CountAll() int {
+	query := `SELECT COUNT(*) FROM vacancies`
+	var count int
+	r.Dbpool.QueryRow(context.Background(), query).Scan(count)
+	return count
+}
+
+func (r *VacancyRepository) GetAll(limit, offset int) ([]Vacancy, error) {
+	query := `select * from vacancies order by createdat LIMIT @limit OFFSET @offset`
+	args := pgx.NamedArgs{
+		"limit":  limit,
+		"offset": offset,
+	}
+	rows, err := r.Dbpool.Query(context.Background(), query, args)
+	if err != nil {
+		return nil, err
+	}
+	vacancies, err := pgx.CollectRows(rows, pgx.RowToStructByName[Vacancy])
+	if err != nil {
+		return nil, err
+	}
+	return vacancies, nil
+}
+
 func (r *VacancyRepository) addVacancy(form VacancyCreateForm) error {
 	query := `INSERT INTO vacancies(email, role, company, salary, type, location, createdat) VALUES (@email, @role, @company, @salary, @type, @location, @createdat)`
 	args := pgx.NamedArgs{
