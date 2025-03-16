@@ -5,6 +5,7 @@ import (
 	"github.com/rs/zerolog"
 	"go/go-fiber/pkg/tadapter"
 	"go/go-fiber/views"
+	"net/http"
 )
 
 type HomeHandler struct {
@@ -29,7 +30,7 @@ func NewHomeHandler(router fiber.Router, customLogger *zerolog.Logger) {
 func (h *HomeHandler) Home(c *fiber.Ctx) error {
 	h.customLogger.Info().Bool("isAdmin", true).Msg("Инфо")
 	component := views.Main()
-	return tadapter.Render(c, component)
+	return tadapter.Render(c, component, http.StatusOK)
 }
 
 func (h *HomeHandler) GetError(c *fiber.Ctx) error {

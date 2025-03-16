@@ -9,17 +9,20 @@ import (
 	"go/go-fiber/pkg/tadapter"
 	"go/go-fiber/pkg/validator"
 	"go/go-fiber/views/components"
+	"net/http"
 )
 
 type VacancyHandler struct {
 	router       fiber.Router
 	customLogger *zerolog.Logger
+	repository   *VacancyRepository
 }
 
-func NewHandler(router fiber.Router, customLogger *zerolog.Logger) {
+func NewHandler(router fiber.Router, customLogger *zerolog.Logger, repository *VacancyRepository) {
 	h := &VacancyHandler{
 		router:       router,
 		customLogger: customLogger,
+		repository:   repository,
 	}
 	vacancyGroup := h.router.Group("/vacancy")
 	vacancyGroup.Post("/", h.createVacancy)
@@ -57,8 +60,14 @@ func (h *VacancyHandler) createVacancy(c *fiber.Ctx) error {
 	var component templ.Component
 	if len(errors.Errors) > 0 {
 		component = components.Notification(validator.FormatErrors(errors), components.NotificationFail)
-		return tadapter.Render(c, component)
+		return tadapter.Render(c, component, http.StatusBadRequest)
+	}
+	err := h.repository.addVacancy(form)
+	if err != nil {
+		h.customLogger.Error().Msg(err.Error())
+		component = components.Notification("Произошла ошибка на сервере, попробуйте позднее", components.NotificationFail)
+		return tadapter.Render(c, component, http.StatusBadRequest)
 	}
 	component = components.Notification("Вакансия успешно создана", components.NotificationSuccess)
-	return tadapter.Render(c, component)
+	return tadapter.Render(c, component, http.StatusCreated)
 }
