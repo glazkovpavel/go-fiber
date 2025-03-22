@@ -2,10 +2,12 @@ package home
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/session"
 	"github.com/rs/zerolog"
 	"go/go-fiber/internal/vacancy"
 	"go/go-fiber/pkg/tadapter"
 	"go/go-fiber/views"
+	"go/go-fiber/views/components"
 	"math"
 	"net/http"
 )
@@ -14,6 +16,7 @@ type HomeHandler struct {
 	router       fiber.Router
 	customLogger *zerolog.Logger
 	repository   *vacancy.VacancyRepository
+	store        *session.Store
 }
 
 type User struct {
@@ -21,13 +24,17 @@ type User struct {
 	Name string
 }
 
-func NewHomeHandler(router fiber.Router, customLogger *zerolog.Logger, repository *vacancy.VacancyRepository) {
+func NewHomeHandler(router fiber.Router, customLogger *zerolog.Logger, repository *vacancy.VacancyRepository, store *session.Store) {
 	h := &HomeHandler{
 		router:       router,
 		customLogger: customLogger,
 		repository:   repository,
+		store:        store,
 	}
 	h.router.Get("/", h.Home)
+	h.router.Get("/login", h.Login)
+	h.router.Post("/api/login", h.apiLogin)
+	h.router.Get("/api/logout", h.apiLogout)
 	h.router.Get("/404", h.GetError)
 }
 
@@ -46,17 +53,46 @@ func (h *HomeHandler) Home(c *fiber.Ctx) error {
 	return tadapter.Render(c, component, http.StatusOK)
 }
 
+func (h *HomeHandler) apiLogout(c *fiber.Ctx) error {
+	sess, err := h.store.Get(c)
+	if err != nil {
+		panic(err)
+	}
+	sess.Delete("email")
+	if err := sess.Save(); err != nil {
+		panic(err)
+	}
+	c.Response().Header.Add("Hx-Redirect", "/")
+	return c.Redirect("/", http.StatusOK)
+}
+
+func (h *HomeHandler) apiLogin(c *fiber.Ctx) error {
+	form := LoinForm{
+		Email:    c.FormValue("email"),
+		Password: c.FormValue("password"),
+	}
+	if form.Email == "a@a.ru" || form.Password == "1" {
+		sess, err := h.store.Get(c)
+		if err != nil {
+			panic(err)
+		}
+		sess.Set("email", form.Email)
+		if err := sess.Save(); err != nil {
+			panic(err)
+		}
+		c.Response().Header.Add("Hx-Redirect", "/")
+		return c.Redirect("/", http.StatusOK)
+	}
+	component := components.Notification("Неверный логин или пароль", components.NotificationFail)
+	return tadapter.Render(c, component, http.StatusBadRequest)
+}
+
+func (h *HomeHandler) Login(c *fiber.Ctx) error {
+	component := views.Login()
+	return tadapter.Render(c, component, http.StatusOK)
+}
+
 func (h *HomeHandler) GetError(c *fiber.Ctx) error {
-	//tmpl := template.Must(template.ParseFiles("./html/page.html"))
-
-	//
-	//var tpl bytes.Buffer
-	//err := tmpl.Execute(&tpl, data)
-	//if err != nil {
-	//	return fiber.NewError(fiber.StatusBadRequest, err.Error())
-	//}
-	//c.Set(fiber.HeaderContentType, "text/html; charset=utf-8")
-
 	data := struct {
 		Count   int
 		IsAdmin bool

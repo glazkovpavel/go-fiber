@@ -14,6 +14,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/gobuffalo/validate v2.0.4+incompatible // indirect
+	github.com/gofiber/storage/postgres/v3 v3.1.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

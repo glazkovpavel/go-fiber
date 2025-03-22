@@ -1,0 +1,34 @@
+package views
+
+import "go/go-fiber/views/components"
+import "go/go-fiber/views/layout"
+import "go/go-fiber/views/widgets"
+
+templ Login() {
+    @layout.Layout(layout.LayoutProps{
+        Title: "Вход на сайт",
+        MetaDescription: "Войти на сайт поиска работы",
+    }) {
+         <main>
+            @LoginStyle()
+            @layout.Header() {
+                @components.Title(components.TitleProps{Title: "Войти на ссайт"})
+                @components.SubTitle("Войдите под своей учётной записью")
+                 @widgets.LoginForm()
+            }
+
+         </main>
+    }
+}
+
+templ LoginStyle() {
+	<style>
+        .main__submit-form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(48, 150, 137, 0.10);
+            padding: 60px 0 120px 0;
+        }
+	</style>
+}

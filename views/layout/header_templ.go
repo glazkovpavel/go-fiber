@@ -88,7 +88,7 @@ func HeaderStyle() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<style>\n\t    .header {\n            display: flex;\n            justify-content: center;\n            flex-direction: column;\n            align-items: center;\n\t        background: #222222;\n\t    }\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<style>\n\t    .header {\n            display: flex;\n            justify-content: center;\n            flex-direction: column;\n            align-items: center;\n\t        background: #222222;\n\t        padding-bottom: 30px;\n\t    }\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
